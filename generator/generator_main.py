@@ -1,6 +1,4 @@
 from generator.generator_regular import generate_regular
-from generator.generator_new_year import generate_new_year
-from generator.generator_wolves import generate_wolves
 
 
 # TODO list:
@@ -26,10 +24,6 @@ async def generate_postcard(query: str, usr_image=None, style="regular", is_png=
 
     if style == "regular":
         img = await generate_regular(query, usr_image, is_png=is_png)
-    elif style == "new_year":
-        img = await generate_new_year(query, usr_image, is_png=is_png)
-    elif style == "wolves":
-        img = await generate_wolves(query, usr_image)
     else:
         img = None
 

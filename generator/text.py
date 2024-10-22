@@ -49,33 +49,17 @@ def paste_text(img: Image, text: str, position_index: int,
 
     print(f"Text font: {font_name}")
 
-    text = _random_line_breaks(text)
-
     # Custom font style and font size
     text_font = ImageFont.truetype(f'{fonts_folder_path}/{font_name}',
                                    size=round(img.width / 10))
+    line_spacing = 1.3
+
+    max_width = int(img.width * 0.9)
+    wrapped_text = _wrap_text(text, max_width, text_font)
 
     text_bbox = img_draw.textbbox((100, 100), text, text_font)
     text_width = text_bbox[2] - text_bbox[0]
     text_height = text_bbox[3] - text_bbox[1]
-
-    i = 0
-
-    while text_width >= img.width:
-        text = _random_line_breaks(text)
-
-        text_font = ImageFont.truetype(f'{fonts_folder_path}/{font_name}',
-                                       size=round(img.width / 10))
-
-        text_bbox = img_draw.textbbox((100, 100), text, text_font)
-        text_width = text_bbox[2] - text_bbox[0]
-        text_height = text_bbox[3] - text_bbox[1]
-
-        if i >= 1000:
-            print("i >= 1000")
-            break
-        else:
-            i += 1
 
     x_offset_divider = 50
     y_offset_divider = 50
@@ -100,19 +84,43 @@ def paste_text(img: Image, text: str, position_index: int,
         x_index = 1
         y_index = 1
 
-    position = (x_positions[x_index],
-                y_positions[y_index])
+    position = [x_positions[x_index],
+                y_positions[y_index]]
 
-    # Add Text to an image
-    img_draw.text(position,
-                  text,
-                  font=text_font,
-                  fill=text_color,
-                  stroke_fill=stroke_color,
-                  stroke_width=5,
-                  align=random.choice(alignments))
+    for line in wrapped_text:
+        line_width = text_font.getlength(line)
+
+        # Add Text to an image
+        img_draw.text(((img.width - line_width) // 2,
+                       position[1]),
+                      text,
+                      font=text_font,
+                      fill=text_color,
+                      stroke_fill=stroke_color,
+                      stroke_width=5,
+                      align=random.choice(alignments))
+
+        position[1] += int(text_font.size * line_spacing)
 
     return img
+
+
+def _wrap_text(text, max_width, font):
+    lines = []
+    words = text.split(' ')
+
+    current_line = ''
+    for word in words:
+        test_line = current_line + word + ' '
+        line_width = font.getlength(test_line)
+        if line_width <= max_width:
+            current_line = test_line
+        else:
+            lines.append(current_line[:-1])
+            current_line = word + ' '
+
+    lines.append(current_line[:-1])
+    return lines
 
 
 def _random_line_breaks(text: str) -> str:
