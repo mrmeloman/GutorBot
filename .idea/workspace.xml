@@ -6,11 +6,9 @@
   <component name="ChangeListManager">
     <list default="true" id="3de8cdb6-6a67-4a09-99c7-3c0955538201" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/generator/generator_main.py" beforeDir="false" afterPath="$PROJECT_DIR$/generator/generator_main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/generator/generator_regular.py" beforeDir="false" afterPath="$PROJECT_DIR$/generator/generator_regular.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/generator/sector_manager.py" beforeDir="false" afterPath="$PROJECT_DIR$/generator/sector_manager.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/generator/text.py" beforeDir="false" afterPath="$PROJECT_DIR$/generator/text.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/generator/watermark.py" beforeDir="false" afterPath="$PROJECT_DIR$/generator/watermark.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/greeting.txt" beforeDir="false" afterPath="$PROJECT_DIR$/greeting.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -29,14 +27,14 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "ASKED_ADD_EXTERNAL_FILES": "true",
-    "Python.Run Bot.executor": "Run",
-    "last_opened_file_path": "E:/Py/GutorBot/main.py",
-    "settings.editor.selected.configurable": "com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ASKED_ADD_EXTERNAL_FILES&quot;: &quot;true&quot;,
+    &quot;Python.Run Bot.executor&quot;: &quot;Run&quot;,
+    &quot;last_opened_file_path&quot;: &quot;E:/Py/GutorBot/main.py&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable&quot;
   }
-}]]></component>
+}</component>
   <component name="RunManager">
     <configuration name="Run Bot" type="PythonConfigurationType" factoryName="Python">
       <module name="GutorBot" />

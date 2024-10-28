@@ -24,7 +24,7 @@ def mark_sector_as_frame(sectors, sector_index: int):
 
 def get_sector_coords(sector_index,
                       whole_img_width, whole_img_height,
-                      small_img_width, small_img_height,
+                      small_img_width=0, small_img_height=0,
                       random_start=-15, random_stop=20):
     x_positions = [round(whole_img_width / 50),
                    round((whole_img_width / 2) - (small_img_width / 2)),
@@ -37,12 +37,14 @@ def get_sector_coords(sector_index,
         xpos = x_positions[0]
     elif sector_index in [1, 4]:
         xpos = x_positions[1]
-    elif sector_index in [2, 5]:
+    # elif sector_index in [2, 5]:
+    else:
         xpos = x_positions[2]
 
     if sector_index in [0, 1, 2]:
         ypos = y_positions[0]
-    elif sector_index in [3, 4, 5]:
+    # elif sector_index in [3, 4, 5]:
+    else:
         ypos = y_positions[1]
 
     return xpos, ypos

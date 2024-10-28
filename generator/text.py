@@ -4,8 +4,11 @@ from random import randint
 
 from PIL import Image, ImageDraw, ImageFont, ImageColor
 
+from generator import sector_manager
 
-def paste_text(img: Image, text: str, position_index: int,
+
+def paste_text(img: Image, text: str,
+               position_index: int,
                fonts_folder_path: str,
                h_from=0, h_to=255,
                s_from=70, s_to=100,
@@ -61,31 +64,10 @@ def paste_text(img: Image, text: str, position_index: int,
     text_width = text_bbox[2] - text_bbox[0]
     text_height = text_bbox[3] - text_bbox[1]
 
-    x_offset_divider = 50
-    y_offset_divider = 50
+    position = sector_manager.get_sector_coords(position_index, img.width, img.height, text_width, text_height)
 
-    x_positions = [img.width / x_offset_divider,
-                   round((img.width / 2) - (text_width / 2)),
-                   (img.width - text_width) - round(img.width / x_offset_divider)]
-
-    y_positions = [random.randint(round(img.height / 50), round(img.height / 40)),
-                   round((img.height / 2) - text_height - (text_height / y_offset_divider))]
-
-    if position_index == 4:
-        x_index = 0
-        y_index = 0
-    elif position_index == 5:
-        x_index = 1
-        y_index = 0
-    elif position_index == 6:
-        x_index = 2
-        y_index = 0
-    else:
-        x_index = 1
-        y_index = 1
-
-    position = [x_positions[x_index],
-                y_positions[y_index]]
+    position = [position[0],
+                position[1]]
 
     for line in wrapped_text:
         line_width = text_font.getlength(line)
@@ -101,6 +83,8 @@ def paste_text(img: Image, text: str, position_index: int,
                       align=random.choice(alignments))
 
         position[1] += int(text_font.size * line_spacing)
+
+
 
     return img
 
@@ -121,15 +105,3 @@ def _wrap_text(text, max_width, font):
 
     lines.append(current_line[:-1])
     return lines
-
-
-def _random_line_breaks(text: str) -> str:
-    replace_probability = 0.4
-    min_len = 4
-
-    for i in range(len(text)):
-        if text[i] == " ":
-            if len(text[:i]) >= min_len:
-                if random.random() <= replace_probability:
-                    text = text[:i] + "\n" + text[i + 1:]
-    return text

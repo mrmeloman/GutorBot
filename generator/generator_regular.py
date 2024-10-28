@@ -11,11 +11,6 @@ STYLE_FOLDER_NAME = "regular"
 async def generate_regular(query: str, usr_image=None, is_png=False):
     skip_watermark = False
 
-    if query.startswith(";;;люблюенотиков;;;"):
-        skip_watermark = True
-        query = query.replace(";;;люблюенотиков;;; ", "")
-        query = query.replace(";;;люблюенотиков;;;", "")
-
     if query == "---noquery---":
         query = ""
 
@@ -90,19 +85,9 @@ async def generate_regular(query: str, usr_image=None, is_png=False):
     img = overlay.paste_overlay(img, f"assets/{STYLE_FOLDER_NAME}/vignettes")
 
     # === TEXT ===
-    if query != "":
-        if frame_type == 6:
-            text_position_index = random.choice([1, 2])
-        elif frame_type == 7:
-            text_position_index = random.choice([0, 1])
-        elif frame_type in [1, 4]:
-            text_position_index = 4
-        else:
-            text_position_index = random.choice([0, 1, 2])
-
-        print(f"Pasting text on position index: {text_position_index}")
-        img = text.paste_text(img, query, text_position_index,
-                              f"assets/{STYLE_FOLDER_NAME}/fonts")
+    print(f"Pasting text")
+    text_position_index = sector_manager.get_random_free_sector(sectors)
+    img = text.paste_text(img, query, text_position_index, f"assets/{STYLE_FOLDER_NAME}/fonts")
 
     # === WATERMARK ===
     print(f"Pasting watermark")
