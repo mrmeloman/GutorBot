@@ -30,8 +30,9 @@ def paste_user_image(img: Image, user_img: Image, position_index, is_png=False) 
 
     # Get position
     position = sector_manager.get_sector_coords(position_index,
-                                                img.width, img.height,
-                                                user_img.width, user_img.height)
+                                                img.width, img.height)
+
+    position = (position[0] - round(user_img.width / 2), position[1] - round(user_img.height / 2))
 
     if not is_png:
         mask = Image.new("L", user_img.size, 0)

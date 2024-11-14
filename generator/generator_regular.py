@@ -15,7 +15,8 @@ async def generate_regular(query: str, usr_image=None, is_png=False):
         query = ""
 
     sectors = np.array(['free', 'free', 'free',
-                        'free', 'free', 'free'])
+                        'free', 'free', 'free'],
+                       dtype="object")
 
     # === RANDOM PARAMETERS ===
     print("Setting random parameters")
@@ -86,7 +87,9 @@ async def generate_regular(query: str, usr_image=None, is_png=False):
 
     # === TEXT ===
     print(f"Pasting text")
-    text_position_index = sector_manager.get_random_free_sector(sectors)
+
+    text_position_index = sector_manager.get_random_free_sector(sectors, mark='text', ignore_objects=True)
+
     img = text.paste_text(img, query, text_position_index, f"assets/{STYLE_FOLDER_NAME}/fonts")
 
     # === WATERMARK ===
@@ -95,5 +98,4 @@ async def generate_regular(query: str, usr_image=None, is_png=False):
         img = watermark.paste_watermark(img)
 
     print("Done! Returning the image")
-    # img.show()
     return img

@@ -42,8 +42,9 @@ def paste_object(img: Image, position_index, assets_path,
 
     # Get position
     position = sector_manager.get_sector_coords(position_index,
-                                                img.width, img.height,
-                                                object_img.width, object_img.height)
+                                                img.width, img.height)
+
+    position = (position[0] - round(object_img.width / 2), position[1] - round(object_img.height / 2))
 
     print(f"Pasting an object at index {position_index}, position {position}")
     # Paste animal over background

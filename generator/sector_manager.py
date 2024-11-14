@@ -2,36 +2,32 @@ import numpy as np
 import random as rnd
 
 
-def _is_free(x): return x == 'free'
+def _is_free(x, ignore_objects):
+    if not ignore_objects:
+        return x == 'free'
+
+    free_condition = x == 'free'
+    ignore_condition = x == 'object'
+
+    return free_condition | ignore_condition
 
 
-def get_random_free_sector(sectors, start_incl=0, stop_incl=5) -> int:
-    free_sectors = np.where(_is_free(sectors))[0]
+def get_random_free_sector(sectors: np.array, start_incl=0, stop_incl=5, mark='object', ignore_objects=False) -> int:
+    free_sectors = np.where(_is_free(sectors, ignore_objects))[0]
     free_sectors = [x for x in free_sectors if start_incl <= x <= stop_incl]
     choice = rnd.choice(free_sectors)
-    sectors[choice] = 'occupied'
+    sectors[choice] = mark
     return choice
 
 
-def mark_sector_as_occupied(sectors, sector_index: int):
-    sectors[sector_index] = 'occupied'
-
-
-# TODO: Use this
-def mark_sector_as_frame(sectors, sector_index: int):
-    sectors[sector_index] = 'frame'
-
-
 def get_sector_coords(sector_index,
-                      whole_img_width, whole_img_height,
-                      small_img_width=0, small_img_height=0,
-                      random_start=-15, random_stop=20):
-    x_positions = [round(whole_img_width / 50),
-                   round((whole_img_width / 2) - (small_img_width / 2)),
-                   (whole_img_width - small_img_width) - round(whole_img_width / 50)]
+                      whole_img_width, whole_img_height):
+    x_positions = [int(whole_img_width * 0.165),
+                   int(whole_img_width * 0.5),
+                   int(whole_img_width * 0.832)]
 
-    y_positions = [round(whole_img_height / 50),
-                   whole_img_height - small_img_height - rnd.randint(random_start, random_stop)]
+    y_positions = [int(whole_img_height * 0.25),
+                   int(whole_img_height * 0.75)]
 
     if sector_index in [0, 3]:
         xpos = x_positions[0]

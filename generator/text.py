@@ -14,8 +14,8 @@ def paste_text(img: Image, text: str,
                s_from=70, s_to=100,
                v_light_from=10, v_light_to=20,
                v_dark_from=80, v_dark_to=100,
-               colors_tuple=None) -> Image:
-
+               colors_tuple=None,
+               line_spacing=1) -> Image:
     # TODO: Better text wrapping can be done, but it's a bit complicated.
     #  See https://www.alpharithms.com/fit-custom-font-wrapped-text-image-python-pillow-552321/ as a start point
 
@@ -40,8 +40,6 @@ def paste_text(img: Image, text: str,
     else:
         text_color, stroke_color = colors_tuple
 
-    alignments = ["left", "center", "right"]
-
     # Call draw Method to add 2D graphics in an image
     img_draw = ImageDraw.Draw(img)
 
@@ -53,40 +51,83 @@ def paste_text(img: Image, text: str,
     print(f"Text font: {font_name}")
 
     # Custom font style and font size
+    font_size = round(img.width / 10)
     text_font = ImageFont.truetype(f'{fonts_folder_path}/{font_name}',
-                                   size=round(img.width / 10))
-    line_spacing = 1.3
+                                   size=font_size)
 
-    max_width = int(img.width * 0.9)
-    wrapped_text = _wrap_text(text, max_width, text_font)
+    position = list(sector_manager.get_sector_coords(position_index, img.width, img.height))
 
-    text_bbox = img_draw.textbbox((100, 100), text, text_font)
-    text_width = text_bbox[2] - text_bbox[0]
+    # If text is in center - almost whole image is available, it can expand both ways
+    if position_index in [0, 3]:
+        anchor = 'lm'
+        alignment = 'left'
+        position[0] -= round(img.width / 6.5)
+        max_permitted_width = round(img.width * 0.8 - position[0])
+    elif position_index in [1, 4]:
+        anchor = 'mm'
+        alignment = 'center'
+        max_permitted_width = round(img.width * 0.8 * 0.5)
+    # elif position_index in [2, 5]:
+    else:
+        anchor = 'rm'
+        alignment = 'right'
+        position[0] += round(img.width / 6.5)
+        max_permitted_width = round((img.width * 0.8) - (img.width - position[0]))
+
+    print(f"Pasting text at index {position_index}, position {position}")
+
+    wrapped_text = _wrap_text(text, max_permitted_width, text_font)
+
+    max_line_width = _get_max_line_width(wrapped_text, text_font)
+
+    # If too wide after wrapping - decrease font size until it fits
+    while text_font.size > 1 and max_line_width > max_permitted_width:
+        font_size -= 1
+        text_font = ImageFont.truetype(f'{fonts_folder_path}/{font_name}', size=font_size)
+        wrapped_text = _wrap_text(text, max_permitted_width, text_font)
+        max_line_width = _get_max_line_width(wrapped_text, text_font)
+
+    # If too tall - decrease font size until it fits
+    text_font = ImageFont.truetype(f'{fonts_folder_path}/{font_name}', size=font_size)
+    #text_bbox = img_draw.textbbox((0, 0), text=wrapped_text[0], font=text_font, anchor=anchor, align=alignment)
+    text_bbox = text_font.getbbox(text=wrapped_text[0], anchor=anchor)
     text_height = text_bbox[3] - text_bbox[1]
+    wrapped_text_height = (text_height + line_spacing) * len(wrapped_text)
 
-    position = sector_manager.get_sector_coords(position_index, img.width, img.height, text_width, text_height)
+    while text_font.size > 1 and wrapped_text_height > (img.height - position[1]):
+        font_size -= 1
+        text_font = ImageFont.truetype(f'{fonts_folder_path}/{font_name}', size=font_size)
 
-    position = [position[0],
-                position[1]]
+        wrapped_text = _wrap_text(text, max_permitted_width, text_font)
+
+        #text_bbox = img_draw.textbbox((0, 0), text=wrapped_text[0], font=text_font, anchor=anchor, align=alignment)
+        text_bbox = text_font.getbbox(text=wrapped_text[0], anchor=anchor)
+        text_height = text_bbox[3] - text_bbox[1]
+        wrapped_text_height = (text_height + line_spacing) * len(wrapped_text)
 
     for line in wrapped_text:
-        line_width = text_font.getlength(line)
-
         # Add Text to an image
-        img_draw.text(((img.width - line_width) // 2,
-                       position[1]),
-                      text,
+        img_draw.text((position[0], position[1]),
+                      line,
                       font=text_font,
                       fill=text_color,
                       stroke_fill=stroke_color,
                       stroke_width=5,
-                      align=random.choice(alignments))
+                      align=alignment,
+                      anchor=anchor)
 
         position[1] += int(text_font.size * line_spacing)
 
-
-
     return img
+
+
+def _get_max_line_width(lines_list: list[str], font):
+    max_length = 0
+
+    for line in lines_list:
+        max_length = max(max_length, font.getlength(line))
+
+    return max_length
 
 
 def _wrap_text(text, max_width, font):
