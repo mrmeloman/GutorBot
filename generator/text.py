@@ -56,23 +56,24 @@ def paste_text(img: Image, text: str,
                                    size=font_size)
 
     position = list(sector_manager.get_sector_coords(position_index, img.width, img.height))
+    position[1] = position[1] - round(img.height * 0.20)
 
     # If text is in center - almost whole image is available, it can expand both ways
     if position_index in [0, 3]:
         anchor = 'lm'
         alignment = 'left'
         position[0] -= round(img.width / 6.5)
-        max_permitted_width = round(img.width * 0.8 - position[0])
+        max_permitted_width = round(img.width * 0.9 - position[0])
     elif position_index in [1, 4]:
-        anchor = 'mm'
+        anchor = 'mt'
         alignment = 'center'
-        max_permitted_width = round(img.width * 0.8 * 0.5)
+        max_permitted_width = round(img.width * 0.9)
     # elif position_index in [2, 5]:
     else:
         anchor = 'rm'
         alignment = 'right'
         position[0] += round(img.width / 6.5)
-        max_permitted_width = round((img.width * 0.8) - (img.width - position[0]))
+        max_permitted_width = round((img.width * 0.9) - (img.width - position[0]))
 
     print(f"Pasting text at index {position_index}, position {position}")
 
@@ -87,23 +88,27 @@ def paste_text(img: Image, text: str,
         wrapped_text = _wrap_text(text, max_permitted_width, text_font)
         max_line_width = _get_max_line_width(wrapped_text, text_font)
 
+    print(f"Text width: {max_line_width}")
+
     # If too tall - decrease font size until it fits
     text_font = ImageFont.truetype(f'{fonts_folder_path}/{font_name}', size=font_size)
-    #text_bbox = img_draw.textbbox((0, 0), text=wrapped_text[0], font=text_font, anchor=anchor, align=alignment)
-    text_bbox = text_font.getbbox(text=wrapped_text[0], anchor=anchor)
-    text_height = text_bbox[3] - text_bbox[1]
-    wrapped_text_height = (text_height + line_spacing) * len(wrapped_text)
+    text_bbox = img_draw.textbbox((position[0], position[1]), text=wrapped_text[0], font=text_font,
+                                  anchor=anchor, align=alignment)
+    line_height = text_bbox[3] - text_bbox[1]
+    wrapped_text_height = (line_height + line_spacing) * len(wrapped_text)
 
-    while text_font.size > 1 and wrapped_text_height > (img.height - position[1]):
+    while text_font.size > 1 and wrapped_text_height > img.height - position[1]:
         font_size -= 1
         text_font = ImageFont.truetype(f'{fonts_folder_path}/{font_name}', size=font_size)
 
         wrapped_text = _wrap_text(text, max_permitted_width, text_font)
 
-        #text_bbox = img_draw.textbbox((0, 0), text=wrapped_text[0], font=text_font, anchor=anchor, align=alignment)
-        text_bbox = text_font.getbbox(text=wrapped_text[0], anchor=anchor)
-        text_height = text_bbox[3] - text_bbox[1]
-        wrapped_text_height = (text_height + line_spacing) * len(wrapped_text)
+        text_bbox = img_draw.textbbox((position[0], position[1]), text=wrapped_text[0], font=text_font,
+                                      anchor=anchor, align=alignment)
+        line_height = text_bbox[3] - text_bbox[1]
+        wrapped_text_height = (line_height + line_spacing) * len(wrapped_text)
+
+    print(f"Text height: {wrapped_text_height}")
 
     for line in wrapped_text:
         # Add Text to an image
@@ -116,7 +121,7 @@ def paste_text(img: Image, text: str,
                       align=alignment,
                       anchor=anchor)
 
-        position[1] += int(text_font.size * line_spacing)
+        position[1] += line_height + line_spacing
 
     return img
 
