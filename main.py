@@ -90,17 +90,14 @@ wait_message_text = "Генерация..."
 
 @tg_bot.message_handler(commands=['help', 'start'])
 async def send_welcome(message):
-    member = await tg_bot.get_chat_member(chat_id=channel_id, user_id=message.from_user.id)
-    if member.status not in ['member', 'creator', 'administrator']:
-        await tg_bot.reply_to(message, "Интрудер!!!")
-        return
-
-    await tg_bot.set_state(message.from_user.id, MyStates.regular, message.chat.id)
-
     with open('greeting.txt', encoding='utf-8') as greeting_file:
         greeting = greeting_file.read()
 
-    await tg_bot.reply_to(message, greeting)
+    member = await tg_bot.get_chat_member(chat_id=channel_id, user_id=message.from_user.id)
+
+    await tg_bot.set_state(message.from_user.id, MyStates.regular, message.chat.id)
+
+    await tg_bot.reply_to(message, greeting, parse_mode='MarkdownV2')
 
 
 # Handle all other messages with content_type 'text' (content_types defaults to ['text'])
@@ -108,7 +105,8 @@ async def send_welcome(message):
 async def process_text_message(message: telebot.types.Message):
     member = await tg_bot.get_chat_member(chat_id=channel_id, user_id=message.from_user.id)
     if member.status not in ['member', 'creator', 'administrator']:
-        await tg_bot.reply_to(message, "Интрудер!!!")
+        await tg_bot.reply_to(message, "Подпишись на [Gutor Production](https://t.me/gutorpro) чтобы начать",
+                              parse_mode='MarkdownV2')
         return
 
     state: str = await tg_bot.get_state(message.from_user.id, message.chat.id)

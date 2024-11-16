@@ -22,7 +22,7 @@ def paste_watermark(img: Image) -> Image:
     position = (x_position, y_position)
 
     empty_image = Image.new('RGBA', (watermark_img.width, watermark_img.height))
-    watermarl_blended = Image.blend(watermark_img, empty_image, 0.4)
+    watermarl_blended = Image.blend(watermark_img, empty_image, 0.2)
 
     img.paste(watermarl_blended,
               position,
