@@ -9,11 +9,11 @@ def paste_user_image(img: Image, user_img: Image, position_index, is_png=False) 
     wth_ratio = user_img.width / user_img.height
     htw_ratio = user_img.height / user_img.width
 
-    new_height = round(img.height / 2)
+    new_height = round(img.height * 0.6)
     new_width = round(new_height * wth_ratio)
 
-    if new_width > img.width / 3:
-        new_width = round(img.width / 3)
+    if new_width > img.width * 0.33:
+        new_width = round(img.width * 0.33)
         new_height = round(new_width * htw_ratio)
 
     new_size = (new_width, new_height)
