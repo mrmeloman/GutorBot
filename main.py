@@ -88,6 +88,7 @@ styles_keyboard.add(regular_style_button)
 #styles_keyboard.add(wolves_style_button)
 
 my_id = 268173857
+nik_id = 6345358514
 channel_id = -1001657092866
 csv_data_file_path = "data/data_file.csv"
 wait_message_text = "Генерация..."
@@ -97,10 +98,21 @@ wait_message_text = "Генерация..."
 async def send_welcome(message):
     with open('greeting.txt', encoding='utf-8') as greeting_file:
         greeting = greeting_file.read()
+        greeting = telebot.formatting.escape_markdown(greeting)
 
     await tg_bot.set_state(message.from_user.id, MyStates.regular, message.chat.id)
 
     await tg_bot.reply_to(message, greeting, parse_mode='MarkdownV2', reply_markup=start_markup)
+
+
+@tg_bot.message_handler(commands=['greeting'])
+async def change_greeting(message: telebot.types.Message):
+    if message.from_user.id != nik_id:
+        return
+
+    text = message.text.replace("/greeting ", "")
+    with open('greeting.txt', encoding='utf-8', mode='w') as greeting_file:
+        greeting_file.write(text)
 
 
 # Handle all other messages with content_type 'text' (content_types defaults to ['text'])
