@@ -93,11 +93,13 @@ async def send_welcome(message):
     with open('greeting.txt', encoding='utf-8') as greeting_file:
         greeting = greeting_file.read()
 
-    member = await tg_bot.get_chat_member(chat_id=channel_id, user_id=message.from_user.id)
-
     await tg_bot.set_state(message.from_user.id, MyStates.regular, message.chat.id)
 
-    await tg_bot.reply_to(message, greeting, parse_mode='MarkdownV2')
+    start_markup = InlineKeyboardMarkup()
+    start_button = InlineKeyboardButton("✅ Начать", callback_data="start_button")
+    start_markup.add(start_button)
+
+    await tg_bot.reply_to(message, greeting, parse_mode='MarkdownV2', reply_markup=start_markup)
 
 
 # Handle all other messages with content_type 'text' (content_types defaults to ['text'])
@@ -184,6 +186,15 @@ async def callback(call: telebot.types.CallbackQuery):
         await tg_bot.send_message(chat_id=call.message.chat.id,
                                   text=f"Стиль изменён на открытки из ватсапа. Введи текст или пришли фото с "
                                        f"подписью.")
+    elif call.data == "start_button":
+        member = await tg_bot.get_chat_member(chat_id=channel_id, user_id=call.from_user.id)
+        if member.status not in ['member', 'creator', 'administrator']:
+            await tg_bot.send_message(call.message.chat.id,
+                                      "Подпишись на [Gutor Production](https://t.me/gutorpro) чтобы начать",
+                                      parse_mode='MarkdownV2')
+            return
+
+        await tg_bot.send_message(call.message.chat.id, "Отлично! Отправляй вложением текст, или любое изображение вместе с текстом, чтобы получить открытку!")
 
 
 async def _reply_with_postcard(message, is_regen=False, style="regular"):
