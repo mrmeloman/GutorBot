@@ -49,6 +49,11 @@ class MyStates(StatesGroup):
     wolves = State()
 
 
+start_markup = InlineKeyboardMarkup()
+start_button = InlineKeyboardButton("✅ Начать", callback_data="start_button")
+start_markup.add(start_button)
+
+
 # === Main keyboard ===
 regen_button = InlineKeyboardButton("♻️ Переделать",
                                     callback_data='regenerate')
@@ -94,10 +99,6 @@ async def send_welcome(message):
         greeting = greeting_file.read()
 
     await tg_bot.set_state(message.from_user.id, MyStates.regular, message.chat.id)
-
-    start_markup = InlineKeyboardMarkup()
-    start_button = InlineKeyboardButton("✅ Начать", callback_data="start_button")
-    start_markup.add(start_button)
 
     await tg_bot.reply_to(message, greeting, parse_mode='MarkdownV2', reply_markup=start_markup)
 
@@ -191,7 +192,7 @@ async def callback(call: telebot.types.CallbackQuery):
         if member.status not in ['member', 'creator', 'administrator']:
             await tg_bot.send_message(call.message.chat.id,
                                       "Подпишись на [Gutor Production](https://t.me/gutorpro) чтобы начать",
-                                      parse_mode='MarkdownV2')
+                                      parse_mode='MarkdownV2', reply_markup=start_markup)
             return
 
         await tg_bot.send_message(call.message.chat.id, "Отлично! Отправляй вложением текст, или любое изображение вместе с текстом, чтобы получить открытку!")
