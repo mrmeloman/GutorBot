@@ -211,7 +211,7 @@ async def callback(call: telebot.types.CallbackQuery):
 
 
 async def _reply_with_postcard(message, is_regen=False, style="regular"):
-    query = message.text
+    query = message.text.replace("\n", " ")
     usr_img = None
     is_png = False
 
