@@ -38,8 +38,6 @@ from generator.generator_main import generate_postcard
 # === TG Setup ===
 with open('data/token.txt') as f:
     TOKEN = f.read()
-    print(TOKEN)
-    print(f"Spaces in token: {' ' in TOKEN}")
 
 state_storage = StateMemoryStorage()
 tg_bot = AsyncTeleBot(TOKEN, state_storage=state_storage)
